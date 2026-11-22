@@ -1,0 +1,34 @@
+CREATE OR REPLACE PROCEDURE register_patient(
+   p_id INT,
+   p_name VARCHAR(100),
+   p_age INT,
+   p_contact VARCHAR(15)
+)
+LANGUAGE plpgsql
+  AS $$
+  BEGIN
+  INSERT INTO patient(patient_id,name,age,contact)
+  VALUES(p_id,p_name,p_age,p_contact);
+  END;
+  $$;
+CREATE OR REPLACE PROCEDURE enter_treatment(
+  a_id INT,
+  t_id INT,
+  diag VARCHAR(200),
+  t_date DATE,
+  presc_id INT,
+  med VARCHAR(100),
+  dose VARCHAR(50)
+)
+LANGUAGE plpgsql
+AS $$ 
+BEGIN 
+INSERT INTO treatment(treatment_id,appointment_id,diagnosis,treatment_date)
+VALUES(t_id,a_id,diag,t_date);
+INSERT INTO prescription(prescription_id,treatment_id,medicine,dosage)
+VALUES(presc_id,t_id,med,dose);
+END;
+$$;
+  
+CALL register_patient(7,'Neha',38,'9990007777');
+CALL enter_treatment(701,802,'Seasonal allergy','2026-08-01',902,'Cetirizine','10mg once daily');
