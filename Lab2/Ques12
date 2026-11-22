@@ -1,0 +1,31 @@
+WITH course_stats AS(
+  SELECT course_id,COUNT(*) AS total_students,
+  AVG(marks) AS avg_marks
+  FROM exam
+  GROUP BY course_id
+),
+above_avg AS(
+  SELECT e.course_id,COUNT(*) AS above_avg_count
+  FROM exam e
+  JOIN course_stats cs
+  ON e.course_id = cs.course_id
+  WHERE e.marks > cs.avg_marks
+  GROUP BY e.course_id
+),
+pass_stats AS(
+  SELECT course_id,
+  ROUND(
+  100.0 * SUM(CASE WHEN marks>=40 THEN 1 ELSE 0 END)/COUNT(*),2
+  )
+  AS pass_percentage
+  FROM exam
+  GROUP BY course_id
+)
+SELECT cs.course_id, cs.total_students, COALESCE (aa.above_avg_count, 0)
+AS above_avg_count, ps.pass_percentage
+FROM course_stats cs
+LEFT JOIN above_avg aa
+ON cs.course_id = aa.course_id
+JOIN pass_stats ps
+ON cs.course_id = ps.course_id
+ORDER BY cs.course_id;
