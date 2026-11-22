@@ -1,0 +1,38 @@
+CREATE OR REPLACE FUNCTION doctor_appointment_summary(doc_id INT)
+RETURNS TABLE(
+  patient_name VARCHAR(100),
+  appt_date DATE,
+  appt_status VARCHAR(20),
+  diagnosis VARCHAR(200)
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE 
+cur CURSOR FOR
+SELECT 
+p.name,a.appointment_date,a.status,COALESCE(t.diagnosis,'Not yet treated') AS diagnosis
+FROM appointment a
+JOIN patient p
+ON a.patient_id = p.patient_id
+LEFT JOIN treatment t
+ON a.appointment_id = t.appointment_id
+WHERE a.doctor_id = doc_id;
+rec RECORD;
+BEGIN
+  OPEN cur;
+
+  LOOP 
+    FETCH cur INTO rec;
+    EXIT WHEN NOT FOUND;
+
+    patient_name :=rec.name;
+    appt_date :=rec.appointment_date;
+    appt_status :=rec.status;
+    diagnosis :=rec.diagnosis;
+
+    RETURN NEXT;
+   END LOOP;
+
+    CLOSE cur;
+END;
+$$;
