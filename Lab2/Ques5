@@ -1,0 +1,9 @@
+SELECT
+student.student_id,
+student.name,
+COUNT(exam.exam_id) AS exams_taken
+FROM student
+LEFT JOIN exam
+ON student.student_id = exam.student_id
+GROUP BY student.student_id, student.name
+ORDER BY student.student_id ASC;
