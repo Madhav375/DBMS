@@ -1,0 +1,10 @@
+SELECT
+student.name,
+course.course_name,
+exam.marks
+FROM exam
+INNER JOIN student 
+ON exam.student_id = student.student_id
+INNER JOIN course
+ON exam.course_id = course.course_id
+ORDER BY exam.marks DESC, student.name ASC;
